@@ -1,13 +1,14 @@
-package ru.aosandy.cdr;
+package ru.aosandy.common;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class CallDataRecord {
+public class CallDataRecord implements Serializable {
 
-    private CallType callType;
-    private String number;
-    private LocalDateTime dateTimeStart;
-    private LocalDateTime dateTimeEnd;
+    private final CallType callType;
+    private final String number;
+    private final LocalDateTime dateTimeStart;
+    private final LocalDateTime dateTimeEnd;
 
     public CallDataRecord(CallType callType, String number, LocalDateTime dateTimeStart, LocalDateTime dateTimeEnd) {
         this.callType = callType;
@@ -30,5 +31,15 @@ public class CallDataRecord {
 
     public LocalDateTime getDateTimeEnd() {
         return dateTimeEnd;
+    }
+
+    @Override
+    public String toString() {
+        return "CallDataRecord{" +
+            "callType=" + callType +
+            ", number='" + number + '\'' +
+            ", dateTimeStart=" + dateTimeStart +
+            ", dateTimeEnd=" + dateTimeEnd +
+            '}';
     }
 }

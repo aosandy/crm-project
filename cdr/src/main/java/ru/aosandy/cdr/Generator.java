@@ -5,6 +5,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import ru.aosandy.common.CallDataRecord;
+import ru.aosandy.common.CallType;
+
 import static java.time.temporal.TemporalAdjusters.firstDayOfYear;
 
 public class Generator {

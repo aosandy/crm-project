@@ -11,6 +11,8 @@
 
     <modules>
         <module>cdr</module>
+        <module>brt</module>
+        <module>common</module>
     </modules>
 
     <properties>

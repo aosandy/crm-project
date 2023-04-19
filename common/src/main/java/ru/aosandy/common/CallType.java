@@ -1,5 +1,6 @@
-package ru.aosandy.cdr;
+package ru.aosandy.common;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
