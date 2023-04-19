@@ -10,7 +10,12 @@ public class CallDataRecord implements Serializable {
     private final LocalDateTime dateTimeStart;
     private final LocalDateTime dateTimeEnd;
 
-    public CallDataRecord(CallType callType, String number, LocalDateTime dateTimeStart, LocalDateTime dateTimeEnd) {
+    public CallDataRecord(
+        CallType callType,
+        String number,
+        LocalDateTime dateTimeStart,
+        LocalDateTime dateTimeEnd
+    ) {
         this.callType = callType;
         this.number = number;
         this.dateTimeStart = dateTimeStart;

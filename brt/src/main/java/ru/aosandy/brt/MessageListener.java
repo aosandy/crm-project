@@ -12,8 +12,14 @@ import java.util.List;
 @Slf4j
 public class MessageListener {
 
+    private final ClientService service;
+
+    public MessageListener(ClientService service) {
+        this.service = service;
+    }
+
     @JmsListener(destination = "cdr")
     public void processCdrMq(@Payload List<CallDataRecord> listCdr) {
-        listCdr.forEach(cdr -> log.info(cdr.toString()));
+        service.proceedCdrToCdrPlus(listCdr);
     }
 }
