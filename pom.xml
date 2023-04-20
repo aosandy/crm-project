@@ -13,6 +13,7 @@
         <module>cdr</module>
         <module>brt</module>
         <module>common</module>
+        <module>hrs</module>
     </modules>
 
     <properties>
@@ -46,11 +47,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-artemis</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.messaginghub</groupId>
-            <artifactId>pooled-jms</artifactId>
-            <version>${pooled.jms.version}</version>
         </dependency>
     </dependencies>
 

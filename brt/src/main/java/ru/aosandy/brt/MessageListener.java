@@ -18,8 +18,8 @@ public class MessageListener {
         this.service = service;
     }
 
-    @JmsListener(destination = "cdr")
+    @JmsListener(destination = "${cdr.mq}")
     public void processCdrMq(@Payload List<CallDataRecord> listCdr) {
-        service.proceedCdrToCdrPlus(listCdr);
+        service.sendCdrPlus(service.proceedCdrToCdrPlus(listCdr));
     }
 }

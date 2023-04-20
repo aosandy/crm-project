@@ -1,11 +1,11 @@
-package ru.aosandy.brt;
+package ru.aosandy.brt.client;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table
+@Table(name = "clients")
 @Getter
 @Setter
 public class Client {
