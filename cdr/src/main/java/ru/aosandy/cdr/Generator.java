@@ -4,24 +4,49 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
+import org.springframework.stereotype.Component;
+import ru.aosandy.cdr.client.Client;
+import ru.aosandy.cdr.client.ClientsRepository;
 import ru.aosandy.common.CallDataRecord;
 import ru.aosandy.common.CallType;
 
 import static java.time.temporal.TemporalAdjusters.firstDayOfYear;
 
+@Component
 public class Generator {
     private static final int MAX_CALL_NUM = 20;
     private static final double DISPERSION_OF_CALL_NUM = 0.1;
     private static final int MAX_CALL_DURATION_MINUTES = 15;
     private static final int TOTAL_MINUTES_IN_YEAR = 525960;
 
-    private final Random rand = new Random();
-    private final Set<String> numbers = new HashSet<>();
+    private final Random rand;
+    private final Set<String> numbers;
+    private final ClientsRepository repository;
+
+    public Generator(ClientsRepository repository) {
+        this.rand = new Random();
+        this.numbers = new HashSet<>();
+        this.repository = repository;
+    }
 
     public List<CallDataRecord> generateCDRs(int n) {
+        double existingNumbersProportion = 0.1;
         List<CallDataRecord> generatedList = new LinkedList<>();
-        for (int i = 0; i < n; i++) {
+
+        List<String> existingNumbers = repository.findAll().stream()
+            .map(Client::getNumber)
+            .collect(Collectors.toCollection(ArrayList::new));
+        Collections.shuffle(existingNumbers);
+
+        Iterator<String> it = existingNumbers.iterator();
+        int i;
+        for (i = 0; i < n * existingNumbersProportion && it.hasNext(); i++) {
+            String number = it.next();
+            generatedList.addAll(generateCDR(number));
+        }
+        for (; i < n; i++) {
             String number = getNewRandomNumber();
             generatedList.addAll(generateCDR(number));
         }

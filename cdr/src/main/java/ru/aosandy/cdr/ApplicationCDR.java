@@ -14,9 +14,9 @@ public class ApplicationCDR {
     public static void main(String[] args) {
         ConfigurableApplicationContext context = SpringApplication.run(ApplicationCDR.class, args);
         MessageSender sender = context.getBean(MessageSender.class);
+        Generator generator = context.getBean(Generator.class);
 
-        Generator generator = new Generator();
-        List<CallDataRecord> generatedList = generator.generateCDRs(1);
+        List<CallDataRecord> generatedList = generator.generateCDRs(100);
         sender.sendMessage(generatedList);
 
         try {
