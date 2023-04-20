@@ -1,6 +1,8 @@
 package ru.aosandy.brt;
 
 import org.springframework.stereotype.Service;
+import ru.aosandy.brt.client.Client;
+import ru.aosandy.brt.client.ClientsRepository;
 import ru.aosandy.common.CallDataRecord;
 import ru.aosandy.common.CallDataRecordPlus;
 
