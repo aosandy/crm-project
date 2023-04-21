@@ -1,6 +1,5 @@
 package ru.aosand.hrs;
 
-import lombok.Data;
 import lombok.Getter;
 import ru.aosandy.common.CallType;
 
@@ -10,14 +9,14 @@ import java.time.LocalDateTime;
 @Getter
 public class Call {
     private final CallType callType;
-    private final LocalDateTime timeStart;
-    private final LocalDateTime timeEnd;
+    private final LocalDateTime startDateTime;
+    private final LocalDateTime endDateTime;
     private Duration duration;
 
-    public Call(CallType callType, LocalDateTime timeStart, LocalDateTime timeEnd) {
+    public Call(CallType callType, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         this.callType = callType;
-        this.timeStart = timeStart;
-        this.timeEnd = timeEnd;
-        this.duration = Duration.between(timeStart, timeEnd);
+        this.startDateTime = startDateTime;
+        this.endDateTime = endDateTime;
+        this.duration = Duration.between(startDateTime, endDateTime);
     }
 }

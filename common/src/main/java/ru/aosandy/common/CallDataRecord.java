@@ -7,8 +7,8 @@ public class CallDataRecord implements Serializable {
 
     private final CallType callType;
     private final String number;
-    private final LocalDateTime dateTimeStart;
-    private final LocalDateTime dateTimeEnd;
+    private final LocalDateTime startDateTime;
+    private final LocalDateTime endDateTime;
 
     public CallDataRecord(
         CallType callType,
@@ -18,8 +18,8 @@ public class CallDataRecord implements Serializable {
     ) {
         this.callType = callType;
         this.number = number;
-        this.dateTimeStart = dateTimeStart;
-        this.dateTimeEnd = dateTimeEnd;
+        this.startDateTime = dateTimeStart;
+        this.endDateTime = dateTimeEnd;
     }
 
     public CallType getCallType() {
@@ -30,12 +30,12 @@ public class CallDataRecord implements Serializable {
         return number;
     }
 
-    public LocalDateTime getDateTimeStart() {
-        return dateTimeStart;
+    public LocalDateTime getStartDateTime() {
+        return startDateTime;
     }
 
-    public LocalDateTime getDateTimeEnd() {
-        return dateTimeEnd;
+    public LocalDateTime getEndDateTime() {
+        return endDateTime;
     }
 
     @Override
@@ -43,8 +43,8 @@ public class CallDataRecord implements Serializable {
         return "CallDataRecord{" +
             "callType=" + callType +
             ", number='" + number + '\'' +
-            ", dateTimeStart=" + dateTimeStart +
-            ", dateTimeEnd=" + dateTimeEnd +
+            ", dateTimeStart=" + startDateTime +
+            ", dateTimeEnd=" + endDateTime +
             '}';
     }
 }

@@ -2,7 +2,6 @@ package ru.aosand.hrs;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.engine.jdbc.dialect.spi.DatabaseMetaDataDialectResolutionInfoAdapter;
 import org.springframework.stereotype.Service;
 import ru.aosand.hrs.period.Period;
 import ru.aosand.hrs.period.PeriodRepository;
@@ -57,8 +56,8 @@ public class TariffService {
 
             clientDataMap.get(number).appendCall(
                 cdr.getCallType(),
-                cdr.getDateTimeStart(),
-                cdr.getDateTimeEnd()
+                cdr.getStartDateTime(),
+                cdr.getEndDateTime()
             );
         }
         return clientDataMap.values();

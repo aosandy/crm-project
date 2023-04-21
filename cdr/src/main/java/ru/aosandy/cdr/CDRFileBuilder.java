@@ -32,10 +32,10 @@ public class CDRFileBuilder {
                 writer.write(cdr.getNumber());
                 writer.write(separator);
 
-                writer.write(cdr.getDateTimeStart().format(formatter));
+                writer.write(cdr.getStartDateTime().format(formatter));
                 writer.write(separator);
 
-                writer.write(cdr.getDateTimeEnd().format(formatter));
+                writer.write(cdr.getEndDateTime().format(formatter));
                 writer.newLine();
             }
         }
