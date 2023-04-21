@@ -1,4 +1,4 @@
-package ru.aosand.hrs.tariff;
+package ru.aosandy.hrs.tariff;
 
 import jakarta.persistence.*;
 import lombok.Getter;

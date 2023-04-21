@@ -1,4 +1,4 @@
-package ru.aosand.hrs.period;
+package ru.aosandy.hrs.period;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

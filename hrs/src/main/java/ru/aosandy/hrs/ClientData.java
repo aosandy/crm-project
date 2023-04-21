@@ -1,4 +1,4 @@
-package ru.aosand.hrs;
+package ru.aosandy.hrs;
 
 import lombok.Getter;
 import ru.aosandy.common.CallType;

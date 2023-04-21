@@ -1,4 +1,4 @@
-package ru.aosand.hrs.tariff;
+package ru.aosandy.hrs.tariff;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

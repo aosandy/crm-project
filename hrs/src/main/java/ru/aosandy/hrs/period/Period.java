@@ -1,4 +1,4 @@
-package ru.aosand.hrs.period;
+package ru.aosandy.hrs.period;
 
 import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;

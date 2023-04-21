@@ -1,4 +1,4 @@
-package ru.aosand.hrs;
+package ru.aosandy.hrs;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jms.annotation.JmsListener;
