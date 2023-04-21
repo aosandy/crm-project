@@ -131,23 +131,38 @@ public class TariffService {
                     bill += currentPeriod.getFixPrice();
                 }
                 if (totalDuration.toMinutes() > currentPeriod.getMinuteLimit()) {
+
+                    // Если текущий звонок начался до лимита, а закончился после - время до лимита обрезается и
+                    // расчитывается по поминутной стоимости, так как далее произойдет переход на следующий период
+                    if (totalDuration.minus(currentDuration).toMinutes() < currentPeriod.getMinuteLimit()) {
+                        Duration newCurrentDuration = totalDuration.minusMinutes(currentPeriod.getMinuteLimit());
+                        bill += (ceilDurationToMinutes(currentDuration) - ceilDurationToMinutes(newCurrentDuration))
+                            * currentPeriod.getPricePerMinute();
+                        currentDuration = newCurrentDuration;
+                    }
+
+                    // Общее время обрезается в любом случае, так как лимит следующего периода
+                    // не учитывает лимит предыдущего
+                    totalDuration = totalDuration.minusMinutes(currentPeriod.getMinuteLimit());
+
+                    // Переход на следующий период
                     currentPeriod = periodRepository.findById(currentPeriod.getNextPeriod())
                         .orElseThrow(() -> new EntityNotFoundException("Period not found"));
                 } else {
                     break;
                 }
             }
+
+            // Рассчет поминутной стоимости звонка
             bill += ceilDurationToMinutes(currentDuration) * currentPeriod.getPricePerMinute();
 
             // Обновление общих данных о потраченном времени
             if (isSameOperator) {
-                totalDurationIncomingSameOperator = totalDurationIncomingSameOperator
-                    .plus(currentTotalDurationIncoming);
-                totalDurationOutcomingSameOperator = totalDurationOutcomingSameOperator
-                    .plus(currentTotaldurationOutcoming);
+                totalDurationIncomingSameOperator = currentTotalDurationIncoming;
+                totalDurationOutcomingSameOperator = currentTotaldurationOutcoming;
             } else {
-                totalDurationIncoming = totalDurationIncoming.plus(currentTotalDurationIncoming);
-                totalDurationOutcoming = totalDurationOutcoming.plus(currentTotaldurationOutcoming);
+                totalDurationIncoming = currentTotalDurationIncoming;
+                totalDurationOutcoming = currentTotaldurationOutcoming;
             }
         }
 
