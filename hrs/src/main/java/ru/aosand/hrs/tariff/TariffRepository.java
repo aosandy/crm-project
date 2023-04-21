@@ -1,8 +1,8 @@
-package ru.aosand.hrs.client;
+package ru.aosand.hrs.tariff;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ClientsRepository extends JpaRepository<Client, Integer> {
+public interface TariffRepository extends JpaRepository<Tariff, Integer> {
 }
