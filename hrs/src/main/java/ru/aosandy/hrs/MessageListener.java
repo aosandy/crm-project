@@ -7,20 +7,21 @@ import org.springframework.stereotype.Service;
 import ru.aosandy.common.CallDataRecordPlus;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 @Slf4j
 public class MessageListener {
 
     private final TariffService service;
+    private final MessageSender messageSender;
 
-    public MessageListener(TariffService service) {
+    public MessageListener(TariffService service, MessageSender messageSender) {
         this.service = service;
+        this.messageSender = messageSender;
     }
 
     @JmsListener(destination = "${cdrplus.mq}")
     public void processCdrMq(@Payload List<CallDataRecordPlus> listCdrPlus) {
-          Map<String, Integer> bills = service.calculateBillsMap(listCdrPlus);
+        messageSender.sendMessage(service.calculateBilling(listCdrPlus));
     }
 }

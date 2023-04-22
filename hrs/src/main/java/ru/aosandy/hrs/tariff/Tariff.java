@@ -15,16 +15,4 @@ public class Tariff {
 
     @Column
     private String name;
-
-    @Column
-    private int startPeriodIncoming;
-
-    @Column
-    private int startPeriodOutcoming;
-
-    @Column
-    private int startPeriodIncomingSameOp;
-
-    @Column
-    private int startPeriodOutcomingSameOp;
 }

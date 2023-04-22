@@ -61,7 +61,7 @@ public class Generator {
         List<CallDataRecord> generatedList = new LinkedList<>();
 
         for (int i = 0; i < callsNum; i++) {
-            CallType callType = getRandomCallType();
+            int callType = getRandomCallType();
 
             LocalDateTime dateTimeStart = currentDateTime.plus(
                 Duration.ofSeconds(rand.nextInt(maxMinutesBetweenCalls * 60))
@@ -81,8 +81,8 @@ public class Generator {
         return generatedList;
     }
 
-    private CallType getRandomCallType() {
-        return CallType.valueOfIndex(rand.nextInt(2) + 1);
+    private int getRandomCallType() {
+        return rand.nextInt(2) + 1;
     }
 
     private String getNewRandomNumber() {

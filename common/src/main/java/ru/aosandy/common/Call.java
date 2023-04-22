@@ -2,10 +2,8 @@ package ru.aosandy.common;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Type;
-import org.postgresql.util.PGInterval;
-import org.springframework.data.relational.core.dialect.PostgresDialect;
 
 import java.io.Serializable;
 import java.time.Duration;
@@ -13,6 +11,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "calls")
+@NoArgsConstructor
 @Getter
 @Setter
 public class Call implements Serializable {
@@ -22,8 +21,7 @@ public class Call implements Serializable {
     private int id;
 
     @Column(name = "call_type_id")
-    @Convert(converter = CallTypeConverter.class)
-    private CallType callType;
+    private int callType;
 
     @Column(name = "start_time")
     private LocalDateTime startDateTime;
@@ -32,7 +30,6 @@ public class Call implements Serializable {
     private LocalDateTime endDateTime;
 
     @Column
-    //@Convert(converter = DurationConverter.class)
     private Duration duration;
 
     @Column
@@ -42,10 +39,7 @@ public class Call implements Serializable {
     @JoinColumn(name = "billing_period_id")
     private BillingPeriod billingPeriod;
 
-    public Call() {
-    }
-
-    public Call(CallType callType, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    public Call(int callType, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         this.callType = callType;
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;

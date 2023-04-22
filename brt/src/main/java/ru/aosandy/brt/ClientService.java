@@ -28,16 +28,14 @@ public class ClientService {
     }
 
     public void proceedReports(List<Report> listReport) {
-        listReport.forEach(System.out::println);
         for (Report report : listReport) {
             BillingPeriod billingPeriod = new BillingPeriod();
             Client client = repository.getClientByNumber(report.getNumber());
-            billingPeriod.setTotalCost(report.getTotalPrice());
+            billingPeriod.setTotalCost(report.getTotalCost());
             billingPeriod.setClient(client);
             report.getCalls().forEach(call -> call.setBillingPeriod(billingPeriod));
             billingPeriod.setCalls(report.getCalls().stream().toList());
             client.getBillingPeriods().add(billingPeriod);
-            System.out.println(client.getBillingPeriods());
             repository.save(client);
         }
     }

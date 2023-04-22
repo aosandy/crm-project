@@ -1,10 +1,7 @@
-package ru.aosandy.hrs.period;
+package ru.aosandy.hrs.tariff;
 
 import jakarta.annotation.Nullable;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,6 +12,7 @@ import lombok.Setter;
 public class Period {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Column
@@ -22,12 +20,12 @@ public class Period {
     private Integer minuteLimit;
 
     @Column
-    private int fixPrice;
+    private int fixCost;
 
     @Column
     private int pricePerMinute;
 
     @Column
     @Nullable
-    private Integer nextPeriod;
+    private Integer nextPeriodId;
 }

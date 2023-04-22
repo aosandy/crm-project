@@ -3,13 +3,13 @@ package ru.aosandy.hrs;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.aosandy.hrs.period.Period;
-import ru.aosandy.hrs.period.PeriodRepository;
+import ru.aosandy.common.*;
+import ru.aosandy.hrs.tariff.Period;
+import ru.aosandy.hrs.tariff.PeriodRepository;
+import ru.aosandy.hrs.tariff.StartPeriodChoice;
+import ru.aosandy.hrs.tariff.StartPeriodChoiceRepository;
 import ru.aosandy.hrs.tariff.Tariff;
 import ru.aosandy.hrs.tariff.TariffRepository;
-import ru.aosandy.common.CallDataRecord;
-import ru.aosandy.common.CallDataRecordPlus;
-import ru.aosandy.common.CallType;
 
 import java.time.Duration;
 import java.util.*;
@@ -19,39 +19,39 @@ import java.util.*;
 public class TariffService {
 
     private final TariffRepository tariffRepository;
+    private final StartPeriodChoiceRepository startPeriodChoiceRepository;
     private final PeriodRepository periodRepository;
 
-    public TariffService(TariffRepository tariffRepository, PeriodRepository periodRepository) {
+    public TariffService(
+        TariffRepository tariffRepository,
+        StartPeriodChoiceRepository startPeriodChoiceRepository,
+        PeriodRepository periodRepository
+    ) {
         this.tariffRepository = tariffRepository;
+        this.startPeriodChoiceRepository = startPeriodChoiceRepository;
         this.periodRepository = periodRepository;
     }
 
-    public Map<String, Integer> calculateBillsMap(List<CallDataRecordPlus> listCdrPlus) {
-        Map<String, Integer> bills = new HashMap<>();
-        Collection<ClientData> clientDataCollection = parseCdrPlusToClientDataMap(listCdrPlus);
+    public List<Report> calculateBilling(List<CallDataRecordPlus> listCdrPlus) {
+        List<Report> reports = parseCdrPlusToReportsList(listCdrPlus);
         try {
-            for (ClientData clientData : clientDataCollection) {
-                Duration total = clientData.getCalls().stream().map(Call::getDuration).reduce(Duration::plus).get();
-                bills.put(clientData.getNumber(), calculateBill(clientData));
-                log.info("Tariff: " + clientData.getTariffId() +
-                    ", Number: " + clientData.getNumber() +
-                    ", Bill: " + (bills.get(clientData.getNumber()) / 100.0) +
-                    ", Total minutes: " + total.toMinutes());
+            for (Report report : reports) {
+                calculatePriceForReport(report);
             }
         } catch (EntityNotFoundException e) {
             e.printStackTrace();
         }
-        return bills;
+        return reports;
     }
 
-    private Collection<ClientData> parseCdrPlusToClientDataMap(List<CallDataRecordPlus> listCdrPlus) {
-        Map<String, ClientData> clientDataMap = new HashMap<>();
+    private List<Report> parseCdrPlusToReportsList(List<CallDataRecordPlus> listCdrPlus) {
+        Map<String, Report> clientDataMap = new HashMap<>();
         for (CallDataRecordPlus cdrp : listCdrPlus) {
             CallDataRecord cdr = cdrp.getCallDataRecord();
             String number = cdrp.getCallDataRecord().getNumber();
             int tariffId = cdrp.getTariffId();
             if (!clientDataMap.containsKey(number)) {
-                clientDataMap.put(number, new ClientData(number, tariffId));
+                clientDataMap.put(number, new Report(number, tariffId));
             }
 
             clientDataMap.get(number).appendCall(
@@ -60,93 +60,80 @@ public class TariffService {
                 cdr.getEndDateTime()
             );
         }
-        return clientDataMap.values();
+        return clientDataMap.values().stream().toList();
     }
 
-    private int calculateBill(ClientData clientData) {
-        Tariff tariff = tariffRepository.findById(clientData.getTariffId()).orElseThrow(
-            () -> new EntityNotFoundException("Tariff not found"));
-        int bill = 0;
+    private void calculatePriceForReport(Report report) {
+        Tariff tariff = tariffRepository.findById(report.getTariffId())
+            .orElseThrow(() -> new EntityNotFoundException("Tariff not found"));
+        List<StartPeriodChoice> choices = startPeriodChoiceRepository.findAllByTariffId(tariff.getId());
 
-        // Инициализация общего времени разговора, раздельно для входящих/исходящих и для
-        // звонков абоненту своего/чужого опертора
-        Duration totalDurationIncoming = Duration.ofSeconds(0);
-        Duration totalDurationOutcoming = Duration.ofSeconds(0);
-        Duration totalDurationIncomingSameOperator = Duration.ofSeconds(0);
-        Duration totalDurationOutcomingSameOperator = Duration.ofSeconds(0);
+        int maxTypeId = choices.stream().max(Comparator.comparing(StartPeriodChoice::getCallTypeId))
+            .orElseThrow(() -> new EntityNotFoundException("StartPeriodChoice not found")).getCallTypeId();
+
+        // Генерация матрицы выбора начального периода в зависимости от типа вызова и того,
+        // внутресетевой звонок или нет
+        int[][] periodChoiceMatrix = new int[2][maxTypeId + 1];
+        for (StartPeriodChoice choice : choices) {
+            periodChoiceMatrix[(choice.isIntranet() ? 1 : 0)]
+                [choice.getCallTypeId()] = choice.getStartPeriodId();
+        }
 
         Set<Integer> usedFixPrices = new HashSet<>();
+        int totalCost = 0;
+        int[][] totalMinutesMatrix = new int[2][maxTypeId + 1];
 
-        for (Call call : clientData.getCalls()) {
-            CallType callType = call.getCallType();
+        for (Call call : report.getCalls()) {
 
-            // Всегда false, так как в CDR нет информации о том, кому звонят
-            boolean isSameOperator = false;
-
-            int startPeriodOutcomingId = isSameOperator ?
-                tariff.getStartPeriodOutcomingSameOp() : tariff.getStartPeriodOutcoming();
-            int startPeriodIncomingId = isSameOperator ?
-                tariff.getStartPeriodIncomingSameOp() : tariff.getStartPeriodIncoming();
+            // Всегда false (0), так как в CDR нет информации о том, кому звонят
+            int isSameOperator = 0;
+            int callType = call.getCallType();
+            int currentPeriodId = periodChoiceMatrix[isSameOperator][callType];
 
             // Выбор стартового периода для текущего звонка
-            Period currentPeriod = periodRepository.findById(
-                switch (callType) {
-                    case OUTGOING -> startPeriodOutcomingId;
-                    case INCOMING -> startPeriodIncomingId;
-                }
-            ).orElseThrow(() -> new EntityNotFoundException("Period not found"));
-
-            // Выбор текущего общего времени разговора в зависимости от оператора собеседника
-            Duration currentTotalDurationIncoming = isSameOperator ?
-                totalDurationIncomingSameOperator : totalDurationIncoming;
-            Duration currentTotaldurationOutcoming = isSameOperator ?
-                totalDurationOutcomingSameOperator : totalDurationOutcoming;
+            Period currentPeriod = periodRepository.findById(currentPeriodId)
+                .orElseThrow(() -> new EntityNotFoundException("Period not found"));
 
             // Продолжительность текущего звонка
-            Duration currentDuration = call.getDuration();
+            long currentMinutes = ceilDurationToMinutes(call.getDuration());
 
-            switch (callType) {
-                case OUTGOING -> currentTotaldurationOutcoming =
-                    currentTotaldurationOutcoming.plus(currentDuration);
-                case INCOMING -> currentTotalDurationIncoming =
-                    currentTotalDurationIncoming.plus(currentDuration);
-            }
+            // Добавление текущих минут в текущую ячейку
+            totalMinutesMatrix[isSameOperator][callType] += currentMinutes;
 
             // Суммарная продолжительность всех обработанных звонков
-            Duration totalDuration;
-            if (startPeriodOutcomingId == startPeriodIncomingId) {
-                totalDuration = currentTotaldurationOutcoming
-                    .plus(currentTotalDurationIncoming);
-            } else {
-                totalDuration = switch (callType) {
-                    case OUTGOING -> currentTotaldurationOutcoming;
-                    case INCOMING -> currentTotalDurationIncoming;
-                };
+            long totalMinutes = 0;
+            for (int i = 0; i < periodChoiceMatrix.length; i++) {
+                for (int j = 0; j < periodChoiceMatrix[0].length; j++) {
+                    if (periodChoiceMatrix[i][j] == currentPeriodId) {
+                        totalMinutes += totalMinutesMatrix[i][j];
+                    }
+                }
             }
+
+            int currentCallCost = 0;
 
             // Фиксированая плата
             while (currentPeriod.getMinuteLimit() != null) {
                 if (!usedFixPrices.contains(currentPeriod.getId())) {
                     usedFixPrices.add(currentPeriod.getId());
-                    bill += currentPeriod.getFixPrice();
+                    totalCost += currentPeriod.getFixCost();
                 }
-                if (totalDuration.toMinutes() > currentPeriod.getMinuteLimit()) {
+                if (totalMinutes > currentPeriod.getMinuteLimit()) {
 
                     // Если текущий звонок начался до лимита, а закончился после - время до лимита обрезается и
                     // расчитывается по поминутной стоимости, так как далее произойдет переход на следующий период
-                    if (totalDuration.minus(currentDuration).toMinutes() < currentPeriod.getMinuteLimit()) {
-                        Duration newCurrentDuration = totalDuration.minusMinutes(currentPeriod.getMinuteLimit());
-                        bill += (ceilDurationToMinutes(currentDuration) - ceilDurationToMinutes(newCurrentDuration))
-                            * currentPeriod.getPricePerMinute();
-                        currentDuration = newCurrentDuration;
+                    if (totalMinutes - currentMinutes < currentPeriod.getMinuteLimit()) {
+                        long newCurrentMinutes = totalMinutes - currentPeriod.getMinuteLimit();
+                        currentCallCost += (currentMinutes - newCurrentMinutes) * currentPeriod.getPricePerMinute();
+                        currentMinutes = newCurrentMinutes;
                     }
 
                     // Общее время обрезается в любом случае, так как лимит следующего периода
                     // не учитывает лимит предыдущего
-                    totalDuration = totalDuration.minusMinutes(currentPeriod.getMinuteLimit());
+                    totalMinutes = totalMinutes - currentPeriod.getMinuteLimit();
 
                     // Переход на следующий период
-                    currentPeriod = periodRepository.findById(currentPeriod.getNextPeriod())
+                    currentPeriod = periodRepository.findById(currentPeriod.getNextPeriodId())
                         .orElseThrow(() -> new EntityNotFoundException("Period not found"));
                 } else {
                     break;
@@ -154,19 +141,12 @@ public class TariffService {
             }
 
             // Рассчет поминутной стоимости звонка
-            bill += ceilDurationToMinutes(currentDuration) * currentPeriod.getPricePerMinute();
+            currentCallCost += currentMinutes * currentPeriod.getPricePerMinute();
 
-            // Обновление общих данных о потраченном времени
-            if (isSameOperator) {
-                totalDurationIncomingSameOperator = currentTotalDurationIncoming;
-                totalDurationOutcomingSameOperator = currentTotaldurationOutcoming;
-            } else {
-                totalDurationIncoming = currentTotalDurationIncoming;
-                totalDurationOutcoming = currentTotaldurationOutcoming;
-            }
+            call.setCost(currentCallCost);
+            totalCost += currentCallCost;
         }
-
-        return bill;
+        report.setTotalCost(totalCost);
     }
 
     private long ceilDurationToMinutes(Duration duration) {
