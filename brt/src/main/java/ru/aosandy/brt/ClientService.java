@@ -1,10 +1,7 @@
 package ru.aosandy.brt;
 
 import org.springframework.stereotype.Service;
-import ru.aosandy.brt.client.Client;
-import ru.aosandy.brt.client.ClientsRepository;
-import ru.aosandy.common.CallDataRecord;
-import ru.aosandy.common.CallDataRecordPlus;
+import ru.aosandy.common.*;
 
 import java.util.List;
 import java.util.Map;
@@ -15,11 +12,9 @@ import java.util.stream.Collectors;
 public class ClientService {
 
     private final ClientsRepository repository;
-    private final MessageSender messageSender;
 
-    public ClientService(ClientsRepository repository, MessageSender messageSender) {
+    public ClientService(ClientsRepository repository) {
         this.repository = repository;
-        this.messageSender = messageSender;
     }
 
     public List<CallDataRecordPlus> proceedCdrToCdrPlus(List<CallDataRecord> listCdr) {
@@ -32,7 +27,18 @@ public class ClientService {
             .toList();
     }
 
-    public void sendCdrPlus(List<CallDataRecordPlus> listCdrPlus) {
-        messageSender.sendMessage(listCdrPlus);
+    public void proceedReports(List<Report> listReport) {
+        listReport.forEach(System.out::println);
+        for (Report report : listReport) {
+            BillingPeriod billingPeriod = new BillingPeriod();
+            Client client = repository.getClientByNumber(report.getNumber());
+            billingPeriod.setTotalCost(report.getTotalPrice());
+            billingPeriod.setClient(client);
+            report.getCalls().forEach(call -> call.setBillingPeriod(billingPeriod));
+            billingPeriod.setCalls(report.getCalls().stream().toList());
+            client.getBillingPeriods().add(billingPeriod);
+            System.out.println(client.getBillingPeriods());
+            repository.save(client);
+        }
     }
 }

@@ -1,28 +1,31 @@
-package ru.aosandy.hrs;
+package ru.aosandy.common;
 
 import lombok.Getter;
-import ru.aosandy.common.CallType;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 @Getter
-public class ClientData {
+public class Report implements Serializable {
 
-    private final Set<Call> calls;
+    private final List<Call> calls;
     private final String number;
     private final int tariffId;
+    private int totalPrice;
 
-    public ClientData(String number, int tariffId) {
+    public Report(String number, int tariffId) {
         this.number = number;
         this.tariffId = tariffId;
-        this.calls = new TreeSet<>(Comparator.comparing(Call::getStartDateTime));
+        this.calls = new LinkedList<>();
     }
 
     public void appendCall(CallType callType, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         Call call = new Call(callType, startDateTime, endDateTime);
         calls.add(call);
+    }
+
+    public void setTotalPrice(int totalPrice) {
+        this.totalPrice = totalPrice;
     }
 }

@@ -5,6 +5,7 @@ import org.springframework.jms.annotation.JmsListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 import ru.aosandy.common.CallDataRecord;
+import ru.aosandy.common.Report;
 
 import java.util.List;
 
@@ -13,13 +14,20 @@ import java.util.List;
 public class MessageListener {
 
     private final ClientService service;
+    private final MessageSender messageSender;
 
-    public MessageListener(ClientService service) {
+    public MessageListener(ClientService service, MessageSender messageSender) {
         this.service = service;
+        this.messageSender = messageSender;
     }
 
     @JmsListener(destination = "${cdr.mq}")
     public void processCdrMq(@Payload List<CallDataRecord> listCdr) {
-        service.sendCdrPlus(service.proceedCdrToCdrPlus(listCdr));
+        messageSender.sendMessage(service.proceedCdrToCdrPlus(listCdr));
+    }
+
+    @JmsListener(destination = "${report.mq}")
+    public void processReports(@Payload List<Report> listReport) {
+        service.proceedReports(listReport);
     }
 }

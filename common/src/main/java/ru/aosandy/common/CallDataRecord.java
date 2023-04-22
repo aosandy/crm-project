@@ -5,13 +5,13 @@ import java.time.LocalDateTime;
 
 public class CallDataRecord implements Serializable {
 
-    private final CallType callType;
+    private final int callType;
     private final String number;
     private final LocalDateTime startDateTime;
     private final LocalDateTime endDateTime;
 
     public CallDataRecord(
-        CallType callType,
+        int callType,
         String number,
         LocalDateTime dateTimeStart,
         LocalDateTime dateTimeEnd
@@ -22,7 +22,7 @@ public class CallDataRecord implements Serializable {
         this.endDateTime = dateTimeEnd;
     }
 
-    public CallType getCallType() {
+    public int getCallType() {
         return callType;
     }
 
