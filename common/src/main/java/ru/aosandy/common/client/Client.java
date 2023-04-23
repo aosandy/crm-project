@@ -1,9 +1,10 @@
-package ru.aosandy.common;
+package ru.aosandy.common.client;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import ru.aosandy.common.BillingPeriod;
 
 import java.io.Serializable;
 import java.util.List;

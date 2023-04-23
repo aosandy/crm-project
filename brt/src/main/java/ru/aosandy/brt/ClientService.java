@@ -2,7 +2,12 @@ package ru.aosandy.brt;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.aosandy.common.*;
+import ru.aosandy.common.BillingPeriod;
+import ru.aosandy.common.CallDataRecord;
+import ru.aosandy.common.CallDataRecordPlus;
+import ru.aosandy.common.Report;
+import ru.aosandy.common.client.Client;
+import ru.aosandy.common.client.ClientsRepository;
 
 import java.util.List;
 import java.util.Map;

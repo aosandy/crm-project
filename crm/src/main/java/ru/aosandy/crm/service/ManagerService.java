@@ -2,11 +2,11 @@ package ru.aosandy.crm.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.aosandy.common.*;
+import ru.aosandy.common.client.Client;
+import ru.aosandy.common.client.ClientsRepository;
 import ru.aosandy.crm.MessageSender;
 import ru.aosandy.crm.payload.*;
 
-import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -51,8 +51,8 @@ public class ManagerService {
         }
         return new BillingResponse(
             repository.findAll().stream()
-            .map(client -> new BillingNumberResponse(client.getNumber(), client.getBalance() / 100.0))
-            .toList()
+                .map(client -> new BillingNumberResponse(client.getNumber(), client.getBalance() / 100.0))
+                .toList()
         );
     }
 }

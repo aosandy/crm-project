@@ -3,6 +3,7 @@ package ru.aosandy.common;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import ru.aosandy.common.client.Client;
 
 import java.io.Serializable;
 import java.util.List;

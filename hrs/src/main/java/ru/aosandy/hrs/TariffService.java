@@ -3,13 +3,11 @@ package ru.aosandy.hrs;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.aosandy.common.*;
-import ru.aosandy.hrs.tariff.Period;
-import ru.aosandy.hrs.tariff.PeriodRepository;
-import ru.aosandy.hrs.tariff.StartPeriodChoice;
-import ru.aosandy.hrs.tariff.StartPeriodChoiceRepository;
-import ru.aosandy.hrs.tariff.Tariff;
-import ru.aosandy.hrs.tariff.TariffRepository;
+import ru.aosandy.common.Call;
+import ru.aosandy.common.CallDataRecord;
+import ru.aosandy.common.CallDataRecordPlus;
+import ru.aosandy.common.Report;
+import ru.aosandy.hrs.tariff.*;
 
 import java.time.Duration;
 import java.util.*;

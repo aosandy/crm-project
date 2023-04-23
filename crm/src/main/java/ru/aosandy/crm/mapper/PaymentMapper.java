@@ -2,7 +2,7 @@ package ru.aosandy.crm.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import ru.aosandy.common.Client;
+import ru.aosandy.common.client.Client;
 import ru.aosandy.crm.payload.PaymentResponse;
 
 @Mapper

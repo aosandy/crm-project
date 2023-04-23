@@ -1,5 +1,12 @@
 package ru.aosandy.cdr;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import ru.aosandy.common.CallDataRecord;
+import ru.aosandy.common.client.Client;
+import ru.aosandy.common.client.ClientsRepository;
+
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -7,38 +14,34 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-import ru.aosandy.cdr.client.Client;
-import ru.aosandy.cdr.client.ClientsRepository;
-import ru.aosandy.common.CallDataRecord;
+import static java.time.temporal.TemporalAdjusters.firstDayOfNextMonth;
 
-import static java.time.temporal.TemporalAdjusters.*;
-
-@AllArgsConstructor
 @Component
 public class GeneratorCDR {
 
-    private final Random rand;
-    private final Set<String> numbers;
-    private final ClientsRepository repository;
-    private final MessageSender messageSender;
+    private final Random rand = new Random();
+    private final Set<String> numbers = new HashSet<>();
+
+    @Autowired
+    private ClientsRepository repository;
+
+    @Autowired
+    private MessageSender messageSender;
 
     @Value("${call-num.max}")
-    private final int maxCallNum;
+    private int maxCallNum;
 
     @Value("${call-num.dispersion}")
-    private final double callNumDispersion;
+    private double callNumDispersion;
 
     @Value("${call-minutes.max}")
-    private final int maxCallMinutes;
+    private int maxCallMinutes;
 
     @Value("${numbers.proportion-of-existing}")
-    private final double existingNumbersProportion;
+    private double existingNumbersProportion;
 
     @Value("${numbers.max}")
-    private final int maxNumbers;
+    private int maxNumbers;
 
     @Value("${start.year}")
     private int currentYear;
