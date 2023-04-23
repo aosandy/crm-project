@@ -13,16 +13,6 @@ public class ApplicationCDR {
 
     public static void main(String[] args) {
         ConfigurableApplicationContext context = SpringApplication.run(ApplicationCDR.class, args);
-        MessageSender sender = context.getBean(MessageSender.class);
-        Generator generator = context.getBean(Generator.class);
-
-        List<CallDataRecord> generatedList = generator.generateCDRs(10);
-        sender.sendMessage(generatedList);
-
-        try {
-            CDRFileBuilder.buildReport(generatedList);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        context.getBean(GeneratorCDR.class).generateAndSend();
     }
 }

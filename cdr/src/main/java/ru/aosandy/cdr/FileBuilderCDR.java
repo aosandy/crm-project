@@ -10,9 +10,9 @@ import java.nio.file.Paths;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-public class CDRFileBuilder {
+public class FileBuilderCDR {
 
-    private CDRFileBuilder() {
+    private FileBuilderCDR() {
         throw new IllegalStateException("Utility class");
     }
 
