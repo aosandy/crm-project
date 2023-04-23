@@ -3,6 +3,12 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <groupId>org.springframework.boot</groupId>
+        <version>3.0.5</version>
+        <relativePath/>
+    </parent>
 
     <groupId>ru.aosandy</groupId>
     <artifactId>nexign-task</artifactId>
@@ -14,6 +20,7 @@
         <module>brt</module>
         <module>common</module>
         <module>hrs</module>
+        <module>crm</module>
     </modules>
 
     <properties>
@@ -21,19 +28,8 @@
         <maven.compiler.target>17</maven.compiler.target>
         <spring.boot.version>3.0.5</spring.boot.version>
         <pooled.jms.version>3.1.0</pooled.jms.version>
+        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
     </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring.boot.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <dependencies>
         <dependency>
