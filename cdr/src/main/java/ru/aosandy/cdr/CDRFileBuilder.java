@@ -26,7 +26,7 @@ public class CDRFileBuilder {
         file.createNewFile();
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
             for (CallDataRecord cdr : listCDR) {
-                writer.write(String.format("%02d", cdr.getCallType().getIndex()));
+                writer.write(String.format("%02d", cdr.getCallType()));
                 writer.write(separator);
 
                 writer.write(cdr.getNumber());

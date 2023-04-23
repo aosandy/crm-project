@@ -33,7 +33,7 @@ public class ClientService {
             Client client = repository.getClientByNumber(report.getNumber());
             billingPeriod.setTotalCost(report.getTotalCost());
             billingPeriod.setClient(client);
-            report.getCalls().forEach(call -> call.setBillingPeriod(billingPeriod));
+            //report.getCalls().forEach(call -> call.setBillingPeriod(billingPeriod));
             billingPeriod.setCalls(report.getCalls().stream().toList());
             client.getBillingPeriods().add(billingPeriod);
             repository.save(client);

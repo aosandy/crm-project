@@ -25,8 +25,10 @@ public class BillingPeriod implements Serializable {
     private Client client;
 
     @OneToMany(
-        mappedBy = "billingPeriod", cascade = CascadeType.ALL,
-        orphanRemoval = true, fetch = FetchType.EAGER
+        cascade = CascadeType.ALL,
+        orphanRemoval = true,
+        fetch = FetchType.EAGER
     )
+    @JoinColumn(name = "billing_period_id")
     private List<Call> calls;
 }

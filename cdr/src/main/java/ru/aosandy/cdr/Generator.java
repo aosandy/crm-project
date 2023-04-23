@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import ru.aosandy.cdr.client.Client;
 import ru.aosandy.cdr.client.ClientsRepository;
 import ru.aosandy.common.CallDataRecord;
-import ru.aosandy.common.CallType;
 
 import static java.time.temporal.TemporalAdjusters.firstDayOfYear;
 
