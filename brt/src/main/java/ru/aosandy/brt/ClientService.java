@@ -9,6 +9,7 @@ import ru.aosandy.common.Report;
 import ru.aosandy.common.client.Client;
 import ru.aosandy.common.client.ClientsRepository;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -24,11 +25,17 @@ public class ClientService {
     public List<CallDataRecordPlus> proceedCdrToCdrPlus(List<CallDataRecord> listCdr) {
         Map<String, Client> clientsMap = repository.findAll().stream()
             .collect(Collectors.toMap(Client::getNumber, Function.identity()));
-        return listCdr.stream()
+        List<CallDataRecordPlus> listCdrPlus = listCdr.stream()
             .filter(cdr -> clientsMap.containsKey(cdr.getNumber()))
             .filter(cdr -> clientsMap.get(cdr.getNumber()).getBalance() > 0)
             .map(cdr -> new CallDataRecordPlus(cdr, clientsMap.get(cdr.getNumber()).getTariffId()))
             .toList();
+        try {
+            FileBuilderCDRPlus.buildReport(listCdrPlus);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return listCdrPlus;
     }
 
     public void proceedReports(List<Report> listReport) {
