@@ -2,14 +2,15 @@ package ru.aosandy.common;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.aosandy.common.BillingPeriod;
 
 import java.io.Serializable;
 import java.util.List;
 
 @Entity
 @Table(name = "clients")
+@NoArgsConstructor
 @Getter
 @Setter
 public class Client implements Serializable {
@@ -35,4 +36,14 @@ public class Client implements Serializable {
         orphanRemoval = true, fetch = FetchType.EAGER
     )
     private List<BillingPeriod> billingPeriods;
+
+    public Client(String number, int balance, int tariffId) {
+        this.number = number;
+        this.balance = balance;
+        this.tariffId = tariffId;
+    }
+
+    public void incrementOperationsCount() {
+        operationsCount += 1;
+    }
 }

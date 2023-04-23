@@ -1,5 +1,6 @@
 package ru.aosandy.brt;
 
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.aosandy.common.*;
 
@@ -8,14 +9,12 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@AllArgsConstructor
 @Service
 public class ClientService {
 
     private final ClientsRepository repository;
-
-    public ClientService(ClientsRepository repository) {
-        this.repository = repository;
-    }
+    private final MessageSender messageSender;
 
     public List<CallDataRecordPlus> proceedCdrToCdrPlus(List<CallDataRecord> listCdr) {
         Map<String, Client> clientsMap = repository.findAll().stream()
@@ -33,10 +32,12 @@ public class ClientService {
             Client client = repository.getClientByNumber(report.getNumber());
             billingPeriod.setTotalCost(report.getTotalCost());
             billingPeriod.setClient(client);
-            //report.getCalls().forEach(call -> call.setBillingPeriod(billingPeriod));
+            report.getCalls().forEach(call -> call.setBillingPeriod(billingPeriod));
             billingPeriod.setCalls(report.getCalls().stream().toList());
             client.getBillingPeriods().add(billingPeriod);
+            client.setBalance(client.getBalance() - report.getTotalCost());
             repository.save(client);
         }
+        messageSender.sendBillingCompletedMessage();
     }
 }

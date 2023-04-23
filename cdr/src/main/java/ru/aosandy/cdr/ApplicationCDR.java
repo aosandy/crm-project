@@ -16,7 +16,7 @@ public class ApplicationCDR {
         MessageSender sender = context.getBean(MessageSender.class);
         Generator generator = context.getBean(Generator.class);
 
-        List<CallDataRecord> generatedList = generator.generateCDRs(100);
+        List<CallDataRecord> generatedList = generator.generateCDRs(10);
         sender.sendMessage(generatedList);
 
         try {

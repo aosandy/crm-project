@@ -1,4 +1,4 @@
-package ru.aosandy.crm;
+package ru.aosandy.crm.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,9 +22,8 @@ public class ClientService {
     public PaymentResponse payAbonent(PaymentRequest request) {
         Client client = repository.getClientByNumber(request.getNumberPhone());
         client.setBalance((int) (client.getBalance() + (request.getMoney() * 100)));
-        client.setOperationsCount(client.getOperationsCount() + 1);
+        client.incrementOperationsCount();
         repository.save(client);
-
         return paymentMapper.mapClientToPaymentResponse(client);
     }
 

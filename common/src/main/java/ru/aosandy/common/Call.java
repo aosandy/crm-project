@@ -35,9 +35,9 @@ public class Call implements Serializable {
     @Column
     private int cost;
 
-    //@ManyToOne(fetch = FetchType.EAGER)
-    //@JoinColumn(name = "billing_period_id")
-    //private BillingPeriod billingPeriod;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "billing_period_id")
+    private BillingPeriod billingPeriod;
 
     public Call(int callType, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         this.callType = callType;

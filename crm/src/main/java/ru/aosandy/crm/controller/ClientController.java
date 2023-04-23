@@ -1,22 +1,19 @@
 
-package ru.aosandy.crm;
+package ru.aosandy.crm.controller;
 
-import org.springframework.http.ResponseEntity;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.aosandy.common.Report;
+import ru.aosandy.crm.service.ClientService;
 import ru.aosandy.crm.payload.PaymentRequest;
 import ru.aosandy.crm.payload.PaymentResponse;
 import ru.aosandy.crm.payload.ReportResponse;
 
+@AllArgsConstructor
 @RestController
 @RequestMapping("/abonent")
 public class ClientController {
 
     private final ClientService service;
-
-    public ClientController(ClientService service) {
-        this.service = service;
-    }
 
     @PatchMapping("/pay")
     public PaymentResponse abonentPay(@RequestBody PaymentRequest request) {
