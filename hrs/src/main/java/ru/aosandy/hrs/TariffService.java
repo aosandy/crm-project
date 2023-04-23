@@ -42,26 +42,7 @@ public class TariffService {
         return reports;
     }
 
-    private List<Report> parseCdrPlusToReportsList(List<CallDataRecordPlus> listCdrPlus) {
-        Map<String, Report> clientDataMap = new HashMap<>();
-        for (CallDataRecordPlus cdrp : listCdrPlus) {
-            CallDataRecord cdr = cdrp.getCallDataRecord();
-            String number = cdrp.getCallDataRecord().getNumber();
-            int tariffId = cdrp.getTariffId();
-            if (!clientDataMap.containsKey(number)) {
-                clientDataMap.put(number, new Report(number, tariffId));
-            }
-
-            clientDataMap.get(number).appendCall(
-                cdr.getCallType(),
-                cdr.getStartDateTime(),
-                cdr.getEndDateTime()
-            );
-        }
-        return clientDataMap.values().stream().toList();
-    }
-
-    private void calculatePriceForReport(Report report) {
+    void calculatePriceForReport(Report report) {
         Tariff tariff = tariffRepository.findById(report.getTariffId())
             .orElseThrow(() -> new EntityNotFoundException("Tariff not found"));
         List<StartPeriodChoice> choices = startPeriodChoiceRepository.findAllByTariffId(tariff.getId());
@@ -145,6 +126,25 @@ public class TariffService {
             totalCost += currentCallCost;
         }
         report.setTotalCost(totalCost);
+    }
+
+    private List<Report> parseCdrPlusToReportsList(List<CallDataRecordPlus> listCdrPlus) {
+        Map<String, Report> clientDataMap = new HashMap<>();
+        for (CallDataRecordPlus cdrp : listCdrPlus) {
+            CallDataRecord cdr = cdrp.getCallDataRecord();
+            String number = cdrp.getCallDataRecord().getNumber();
+            int tariffId = cdrp.getTariffId();
+            if (!clientDataMap.containsKey(number)) {
+                clientDataMap.put(number, new Report(number, tariffId));
+            }
+
+            clientDataMap.get(number).appendCall(
+                cdr.getCallType(),
+                cdr.getStartDateTime(),
+                cdr.getEndDateTime()
+            );
+        }
+        return clientDataMap.values().stream().toList();
     }
 
     private long ceilDurationToMinutes(Duration duration) {

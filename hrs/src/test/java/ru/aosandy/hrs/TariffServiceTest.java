@@ -1,4 +1,3 @@
-/*
 package ru.aosandy.hrs;
 
 import org.junit.jupiter.api.Test;
@@ -34,7 +33,9 @@ class TariffServiceTest {
             LocalDateTime.of(2023, 3, 1, 1, 1, 59)
         );
         service.calculatePriceForReport(report);
-        assertEquals(105, report.getTotalCost() / 100.0);
+        double expected = 100 + 2 + 1 + 2;
+        double actual = report.getTotalCost() / 100.0;
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -56,7 +57,9 @@ class TariffServiceTest {
             LocalDateTime.of(2023, 3, 1, 2, 1, 59)
         );
         service.calculatePriceForReport(report);
-        assertEquals(99, report.getTotalCost() / 100.0);
+        double expected = 3 * 1.5 + 1.5 + 62 * 1.5;
+        double actual = report.getTotalCost() / 100.0;
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -78,8 +81,8 @@ class TariffServiceTest {
             LocalDateTime.of(2023, 3, 1, 2, 1, 59)
         );
         service.calculatePriceForReport(report);
-        assertEquals(50 * 0.5 + 50 * 0.5 + 12 * 1.5, report.getTotalCost() / 100.0);
+        double expected = 50 * 0.5 + 50 * 0.5 + 12 * 1.5;
+        double actual = report.getTotalCost() / 100.0;
+        assertEquals(expected, actual);
     }
 }
-
-*/
