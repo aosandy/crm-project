@@ -21,6 +21,6 @@ public class ClientController {
 
     @GetMapping("/report/{numberPhone}")
     public ReportResponse abonentReport(@PathVariable("numberPhone") String number) {
-        return service.getReport(number);
+        return service.abonentReport(number);
     }
 }

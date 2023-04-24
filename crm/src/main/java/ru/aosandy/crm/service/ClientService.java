@@ -43,7 +43,7 @@ public class ClientService implements UserDetailsService {
         return paymentMapper.mapClientToPaymentResponse(client);
     }
 
-    public ReportResponse getReport(String number) {
+    public ReportResponse abonentReport(String number) {
         Client client = repository.findByNumber(number)
             .orElseThrow(() -> new UsernameNotFoundException("Client not found"));
         List<Call> calls = new LinkedList<>();

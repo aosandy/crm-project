@@ -1,0 +1,288 @@
+openapi: 3.0.3
+info:
+  title: Nexign Bootcamp Task
+  description: Nexign Bootcamp Task
+  contact:
+    email: info@localhost
+  version: 1.0.0
+
+servers:
+  - url: http://localhost
+tags:
+  - name: abonent
+    description: В этом разделе находятся методы взаимодействия абонента с системой
+  - name: manager
+    description: В этом разделе находятся методы взаимодействия менеджера с системой
+paths:
+  /abonent/pay:
+    patch:
+      tags:
+        - abonent
+      summary: Пополнение баланса абонентом
+      description: Абонент пополняет свой счет
+      operationId: abonentPay
+      requestBody:
+        description: В теле запроса обязательно должен быть номер абонента и сумма, на которую абонент планирует пополнить баланс
+        content:
+          application/json:
+            schema:
+              required:
+                - phoneNumber
+                - money
+              type: object
+              properties:
+                phoneNumber:
+                  type: string
+                  example: "79001112233"
+                money:
+                  type: integer
+                  format: int64
+                  example: 400
+        required: true
+      responses:
+        '200':
+          description: Успешное пополнение баланса
+          content:
+            application/json:
+              schema:
+                required:
+                  - id
+                  - phoneNumber
+                  - money
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    format: int64
+                    example: 10
+                  phoneNumber:
+                    type: string
+                    example: "79001112233"
+                  balance:
+                    type: integer
+                    format: int64
+                    example: 800
+
+  /report/{numberPhone}:
+    get:
+      tags:
+        - abonent
+      summary: Получение детализации звонков абонентом
+      description: Абонент получает детализацию звонков
+      operationId: abonentReport
+      parameters:
+        - in: path
+          name: numberPhone
+          schema:
+            type: string
+          required: true
+          description: Номер абонента
+      responses:
+        '200':
+          description: Успешное получение детализации звонков
+          content:
+            application/json:
+              schema:
+                required:
+                  - id
+                  - phoneNumber
+                  - tariffIndex
+                  - payload
+                  - totalCost
+                  - monetaryUnit
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    format: int64
+                    example: 10
+                  phoneNumber:
+                    type: string
+                    example: "79001112233"
+                  tariffIndex:
+                    type: string
+                    example: "03"
+                  payload:
+                    $ref: '#/components/schemas/ArrayOfCalls'
+                  totalCost:
+                    type: integer
+                    format: int64
+                    example: 800
+                  monetaryUnit:
+                    type: string
+                    example: "rubles"
+
+  /manager/abonent:
+    post:
+      tags:
+        - manager
+      summary: Менеджер создаёт нового абонента
+      description: Менеджер создаёт нового абонента
+      operationId: createClient
+      requestBody:
+        description: В теле запроса должен быть номер, пароль, индекс тарифа и баланс абонента
+        content:
+          application/json:
+            schema:
+              required:
+                - phoneNumber
+                - tarrif
+              type: object
+              properties:
+                phoneNumber:
+                  type: string
+                  example: "79001112233"
+                password:
+                  type: string
+                  example: "password"
+                tarrif:
+                  type: integer
+                  example: 3
+                balance:
+                  type: integer
+                  example: 300
+        required: true
+      responses:
+        '200':
+          description: Успешное создание абонента
+          content:
+            application/json:
+              schema:
+                required:
+                  - phoneNumber
+                  - password
+                  - tarrif
+                  - balance
+                type: object
+                properties:
+                  password:
+                    type: string
+                    example: "$2a$10$5P9qZIWH0Rn.3cNxzSPqMeYDt4O0veHUXYrtS6Y7EAp50IfuVjuXe"
+                  phoneNumber:
+                    type: string
+                    example: "79001112233"
+                  tarrif:
+                    type: integer
+                    format: int64
+                    example: 3
+                  balance:
+                    type: integer
+                    format: int64
+                    example: 300
+
+  /manager/changeTariff:
+    patch:
+      tags:
+        - manager
+      summary: Менеджер меняет тариф абонента
+      description: Менеджер меняет тариф абонента
+      operationId: changeTariff
+      requestBody:
+        description: В теле запроса должен быть номер и новый тариф абонента
+        content:
+          application/json:
+            schema:
+              required:
+                - phoneNumber
+                - tariffIndex
+              type: object
+              properties:
+                phoneNumber:
+                  type: string
+                  example: "79001112233"
+                tariffIndex:
+                  type: integer
+                  example: 3
+        required: true
+      responses:
+        '200':
+          description: Успешное изменение тарифа абонента
+          content:
+            application/json:
+              schema:
+                required:
+                  - id
+                  - phoneNumber
+                  - tariffIndex
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    format: int64
+                    example: 2
+                  phoneNumber:
+                    type: string
+                    example: "79001112233"
+                  tariffIndex:
+                    type: integer
+                    format: int64
+                    example: 3
+
+  /manager/performBilling:
+    patch:
+      tags:
+        - manager
+      summary: Менеджер запускает тарификацию
+      description: Менеджер запускает тарификацию
+      operationId: performBilling
+      requestBody:
+        description: В теле запроса должно быть слово "run"
+        content:
+          application/json:
+            schema:
+              required:
+                - action
+              type: object
+              properties:
+                action:
+                  type: string
+                  example: "run"
+        required: true
+      responses:
+        '200':
+          description: Успешная тарификация
+          content:
+            application/json:
+              schema:
+                required:
+                  - numbers
+                type: object
+                properties:
+                  numbers:
+                    $ref: '#/components/schemas/ArrayOfNumbers'
+
+components:
+  schemas:
+    ArrayOfCalls:
+      type: array
+      items:
+        type: object
+        properties:
+          callType:
+            type: string
+          startTime:
+            type: string
+          endTime:
+            type: string
+          duration:
+            type: string
+          cost:
+            type: number
+      example:
+        - callType: "01"
+          startTime: "2023-01-01 17:16:16"
+          endTime: "2023-01-01 17:18:17"
+          duration: "00:02:01"
+          cost: 1.5
+    ArrayOfNumbers:
+      type: array
+      items:
+        type: object
+        properties:
+          numberPhone:
+            type: string
+          ballance:
+            type: number
+      example:
+        - numberPhone: "79324918243"
+          ballance: 398.86
