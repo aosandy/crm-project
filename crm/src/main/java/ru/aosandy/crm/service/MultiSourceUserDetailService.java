@@ -18,15 +18,16 @@ public class MultiSourceUserDetailService implements UserDetailsService {
     private ManagerService managerService;
 
     @Override
-    public UserDetails loadUserByUsername(String number) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserDetails userDetails = null;
         try {
-            userDetails = clientService.loadUserByUsername(number);
-        } catch (UsernameNotFoundException ignored) {
-        }
+            userDetails = clientService.loadUserByUsername(username);
+        } catch (UsernameNotFoundException ignored) {}
         try {
-            userDetails = managerService.loadUserByUsername(number);
-        } catch (UsernameNotFoundException ignored) {
+            userDetails = managerService.loadUserByUsername(username);
+        } catch (UsernameNotFoundException ignored) {}
+        if (userDetails == null) {
+            throw new UsernameNotFoundException("Username not found");
         }
         return userDetails;
     }

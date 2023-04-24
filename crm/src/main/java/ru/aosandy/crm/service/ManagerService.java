@@ -46,7 +46,7 @@ public class ManagerService implements UserDetailsService {
         return clientData;
     }
 
-    public synchronized BillingResponse performBilling(BillingRequest request) {
+    public synchronized BillingResponse performBilling(BillingRequest request) throws InterruptedException {
         if (!Objects.equals(request.getAction(), "run")) {
             throw new IllegalStateException();
         }
@@ -58,7 +58,7 @@ public class ManagerService implements UserDetailsService {
                 wait();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                e.printStackTrace();
+                throw e;
             }
         }
         return new BillingResponse(

@@ -1,9 +1,9 @@
 package ru.aosandy.crm.controller;
 
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.aosandy.crm.payload.BillingRequest;
-import ru.aosandy.crm.payload.BillingResponse;
 import ru.aosandy.crm.payload.ClientData;
 import ru.aosandy.crm.payload.TariffChangeResponse;
 import ru.aosandy.crm.service.ManagerService;
@@ -26,7 +26,12 @@ public class ManagerController {
     }
 
     @PatchMapping("/billing")
-    public BillingResponse performBilling(@RequestBody BillingRequest request) {
-        return service.performBilling(request);
+    public ResponseEntity performBilling(@RequestBody BillingRequest request) {
+        try {
+            return ResponseEntity.ok(service.performBilling(request));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
     }
 }
