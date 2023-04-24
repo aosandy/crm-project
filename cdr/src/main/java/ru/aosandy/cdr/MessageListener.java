@@ -13,7 +13,7 @@ public class MessageListener {
     private final GeneratorCDR generator;
 
     @JmsListener(destination = "${billing.perform.mq}")
-    public void processReports() {
+    public void processPerformBillingMq() {
         generator.generateAndSend();
     }
 }

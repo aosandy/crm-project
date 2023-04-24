@@ -8,6 +8,8 @@ import ru.aosandy.common.Call;
 import ru.aosandy.common.Report;
 import ru.aosandy.common.client.Client;
 import ru.aosandy.common.client.ClientsRepository;
+import ru.aosandy.crm.MessageListener;
+import ru.aosandy.crm.MessageSender;
 import ru.aosandy.crm.mapper.PaymentMapper;
 import ru.aosandy.crm.mapper.ReportMapper;
 import ru.aosandy.crm.payload.PaymentRequest;
@@ -25,6 +27,7 @@ public class ClientService {
     private final ClientsRepository repository;
     private final PaymentMapper paymentMapper;
     private final ReportMapper reportMapper;
+    private final MessageSender messageSender;
 
     public PaymentResponse abonentPay(PaymentRequest request) {
         Client client = repository.findByNumber(request.getNumberPhone())
@@ -32,6 +35,9 @@ public class ClientService {
         client.setBalance((int) (client.getBalance() + (request.getMoney() * 100)));
         client.incrementOperationsCount();
         repository.save(client);
+        updateCache();
+        messageSender.sendCacheUpdateCommand();
+
         return paymentMapper.mapClientToPaymentResponse(client);
     }
 
@@ -50,5 +56,9 @@ public class ClientService {
         ReportResponse response = reportMapper.mapReportToReportResponse(report);
         response.setId(client.getId());
         return response;
+    }
+
+    private void updateCache() {
+        repository.updateCache();
     }
 }

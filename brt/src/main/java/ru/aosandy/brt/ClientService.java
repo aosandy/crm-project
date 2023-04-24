@@ -52,6 +52,12 @@ public class ClientService {
             client.setBalance(client.getBalance() - report.getTotalCost());
             repository.save(client);
         }
-        messageSender.sendBillingCompletedMessage();
+        updateCache();
+        messageSender.sendCacheUpdateCommand();
+        messageSender.sendBillingCompletedCommand();
+    }
+
+    private void updateCache() {
+        repository.updateCache();
     }
 }

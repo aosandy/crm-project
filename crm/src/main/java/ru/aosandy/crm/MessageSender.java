@@ -3,25 +3,30 @@ package ru.aosandy.crm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
+import ru.aosandy.common.CommandType;
 
 @Service
 public class MessageSender {
 
     private final JmsTemplate jmsTemplate;
-    private final String queueName;
-    private final String performBillingMsg;
+    private final String cdrMq;
+    private final String updateCacheSendMq;
 
     public MessageSender(
         JmsTemplate jmsTemplate,
         @Value("${billing.perform.mq}") String cdrMq,
-        @Value("${billing.perform.message}") String performBillingMsg
+        @Value("${update-cache-send.mq}") String updateCacheSendMq
     ) {
         this.jmsTemplate = jmsTemplate;
-        this.queueName = cdrMq;
-        this.performBillingMsg = performBillingMsg;
+        this.cdrMq = cdrMq;
+        this.updateCacheSendMq = updateCacheSendMq;
     }
 
-    public void sendPerformBillingMessage() {
-        jmsTemplate.convertAndSend(queueName, performBillingMsg);
+    public void sendPerformBillingCommand() {
+        jmsTemplate.convertAndSend(cdrMq, CommandType.PERFORM_BILLING);
+    }
+
+    public void sendCacheUpdateCommand() {
+        jmsTemplate.convertAndSend(updateCacheSendMq, CommandType.UPDATE_CACHE);
     }
 }

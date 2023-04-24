@@ -1,30 +1,28 @@
 package ru.aosandy.brt;
 
 import jakarta.persistence.EntityNotFoundException;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 import ru.aosandy.common.CallDataRecord;
 import ru.aosandy.common.Report;
+import ru.aosandy.common.client.ClientsRepository;
 
 import java.util.List;
 
 @Service
-@Slf4j
+@AllArgsConstructor
 public class MessageListener {
 
     private final ClientService service;
     private final MessageSender messageSender;
-
-    public MessageListener(ClientService service, MessageSender messageSender) {
-        this.service = service;
-        this.messageSender = messageSender;
-    }
+    private final ClientsRepository repository;
 
     @JmsListener(destination = "${cdr.mq}")
     public void processCdrMq(@Payload List<CallDataRecord> listCdr) {
-        messageSender.sendMessage(service.proceedCdrToCdrPlus(listCdr));
+        messageSender.sendCdrPlus(service.proceedCdrToCdrPlus(listCdr));
     }
 
     @JmsListener(destination = "${report.mq}")
@@ -34,5 +32,10 @@ public class MessageListener {
         } catch (EntityNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    @JmsListener(destination = "${update-cache-listen.mq}")
+    public void processCacheUpdateMq() {
+        repository.updateCache();
     }
 }

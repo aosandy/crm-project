@@ -22,6 +22,6 @@ public class MessageListener {
 
     @JmsListener(destination = "${cdrplus.mq}")
     public void processCdrMq(@Payload List<CallDataRecordPlus> listCdrPlus) {
-        messageSender.sendMessage(service.calculateBilling(listCdrPlus));
+        messageSender.sendReports(service.calculateBilling(listCdrPlus));
     }
 }

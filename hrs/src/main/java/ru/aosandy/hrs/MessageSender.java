@@ -18,7 +18,7 @@ public class MessageSender {
         this.reportMq = reportMq;
     }
 
-    public void sendMessage(List<Report> listReport) {
+    public void sendReports(List<Report> listReport) {
         jmsTemplate.convertAndSend(reportMq, listReport);
     }
 }

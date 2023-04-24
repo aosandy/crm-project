@@ -56,7 +56,7 @@ public class GeneratorCDR {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        messageSender.sendMessage(generatedList);
+        messageSender.sendCdr(generatedList);
     }
 
     private List<CallDataRecord> generateListCdr(int n) {

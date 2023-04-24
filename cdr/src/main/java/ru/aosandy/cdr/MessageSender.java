@@ -18,7 +18,7 @@ public class MessageSender {
         this.cdrMq = cdrMq;
     }
 
-    public void sendMessage(List<CallDataRecord> listCdr) {
+    public void sendCdr(List<CallDataRecord> listCdr) {
         jmsTemplate.convertAndSend(cdrMq, listCdr);
     }
 }

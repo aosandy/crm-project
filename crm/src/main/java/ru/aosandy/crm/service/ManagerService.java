@@ -31,6 +31,9 @@ public class ManagerService {
         client.setTariffId(request.getTariffIndex());
         client.incrementOperationsCount();
         clientRepository.save(client);
+        updateCache();
+        messageSender.sendCacheUpdateCommand();
+
         return new TariffChangeResponse(client.getOperationsCount(), client.getNumber(), client.getTariffId());
     }
 
@@ -53,6 +56,9 @@ public class ManagerService {
         );
         userRepository.save(user);
         clientRepository.save(client);
+        updateCache();
+        messageSender.sendCacheUpdateCommand();
+
         clientData.setPassword(encodedPassword);
         return clientData;
     }
@@ -61,7 +67,7 @@ public class ManagerService {
         if (!Objects.equals(request.getAction(), "run")) {
             throw new IllegalStateException();
         }
-        messageSender.sendPerformBillingMessage();
+        messageSender.sendPerformBillingCommand();
         boolean wait = true;
         while (wait) {
             wait = false;
@@ -72,10 +78,15 @@ public class ManagerService {
                 throw e;
             }
         }
+        updateCache();
         return new BillingResponse(
             clientRepository.findAll().stream()
                 .map(client -> new BillingNumberResponse(client.getNumber(), client.getBalance() / 100.0))
                 .toList()
         );
+    }
+
+    private void updateCache() {
+        clientRepository.updateCache();
     }
 }
