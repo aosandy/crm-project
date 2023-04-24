@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.aosandy.common.client.Client;
 import ru.aosandy.common.client.ClientsRepository;
@@ -12,6 +13,7 @@ import ru.aosandy.crm.manager.ManagerRepository;
 import ru.aosandy.crm.payload.*;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -20,6 +22,7 @@ public class ManagerService implements UserDetailsService {
     private final ClientsRepository clientRepository;
     private final ManagerRepository managerRepository;
     private final MessageSender messageSender;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -37,12 +40,19 @@ public class ManagerService implements UserDetailsService {
     }
 
     public ClientData createClient(ClientData clientData) {
+        Optional<Client> foundClient = clientRepository.findByNumber(clientData.getNumberPhone());
+        if (foundClient.isPresent()) {
+            throw new IllegalStateException("Client already exist");
+        }
+        String encodedPassword = passwordEncoder.encode(clientData.getPassword());
         Client client = new Client(
             clientData.getNumberPhone(),
+            encodedPassword,
             clientData.getTariffIndex(),
             (int) (clientData.getBallance() * 100)
         );
         clientRepository.save(client);
+        clientData.setPassword(encodedPassword);
         return clientData;
     }
 

@@ -48,10 +48,11 @@ public class Client implements Serializable, UserDetails {
     )
     private List<BillingPeriod> billingPeriods;
 
-    public Client(String number, int balance, int tariffId) {
+    public Client(String number, String password, int tariffId, int balance) {
         this.number = number;
-        this.balance = balance;
+        this.password = password;
         this.tariffId = tariffId;
+        this.balance = balance;
     }
 
     public void incrementOperationsCount() {

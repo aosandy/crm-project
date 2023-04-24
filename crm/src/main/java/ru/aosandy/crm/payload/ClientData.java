@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ClientData {
     private String numberPhone;
+    private String password;
     private int tariffIndex;
     private double ballance;
 }

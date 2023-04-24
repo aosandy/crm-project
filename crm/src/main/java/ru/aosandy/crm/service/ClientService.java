@@ -1,7 +1,6 @@
 package ru.aosandy.crm.service;
 
 import lombok.AllArgsConstructor;
-import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -35,7 +34,7 @@ public class ClientService implements UserDetailsService {
             .orElseThrow(() -> new UsernameNotFoundException("Client not found"));
     }
 
-    public PaymentResponse payAbonent(PaymentRequest request) {
+    public PaymentResponse abonentPay(PaymentRequest request) {
         Client client = repository.findByNumber(request.getNumberPhone())
             .orElseThrow(() -> new UsernameNotFoundException("Client not found"));
         client.setBalance((int) (client.getBalance() + (request.getMoney() * 100)));

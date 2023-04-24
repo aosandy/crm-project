@@ -1,5 +1,6 @@
 package ru.aosandy.crm.controller;
 
+import org.postgresql.util.PSQLException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,9 +13,15 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(value = {UsernameNotFoundException.class})
-    protected ResponseEntity<Object> handleConflict(RuntimeException ex, WebRequest request) {
-        String bodyOfResponse = "Username not found";
+    @ExceptionHandler(value = {UsernameNotFoundException.class, IllegalStateException.class})
+    protected ResponseEntity<Object> handleIllegalStateException(RuntimeException ex, WebRequest request) {
+        String bodyOfResponse = ex.getLocalizedMessage();
+        return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+    }
+
+    @ExceptionHandler(value = {PSQLException.class})
+    protected ResponseEntity<Object> handlePSQLException(RuntimeException ex, WebRequest request) {
+        String bodyOfResponse = "Request contains invalid data";
         return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 }

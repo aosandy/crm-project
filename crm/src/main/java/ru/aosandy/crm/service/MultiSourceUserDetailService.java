@@ -22,10 +22,12 @@ public class MultiSourceUserDetailService implements UserDetailsService {
         UserDetails userDetails = null;
         try {
             userDetails = clientService.loadUserByUsername(username);
-        } catch (UsernameNotFoundException ignored) {}
+        } catch (UsernameNotFoundException ignored) {
+        }
         try {
             userDetails = managerService.loadUserByUsername(username);
-        } catch (UsernameNotFoundException ignored) {}
+        } catch (UsernameNotFoundException ignored) {
+        }
         if (userDetails == null) {
             throw new UsernameNotFoundException("Username not found");
         }

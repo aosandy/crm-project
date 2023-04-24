@@ -16,7 +16,7 @@ public class ClientController {
 
     @PatchMapping("/pay")
     public PaymentResponse abonentPay(@RequestBody PaymentRequest request) {
-        return service.payAbonent(request);
+        return service.abonentPay(request);
     }
 
     @GetMapping("/report/{numberPhone}")
