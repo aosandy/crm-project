@@ -58,8 +58,10 @@ public class TariffService {
                 [choice.getCallTypeId()] = choice.getStartPeriodId();
         }
 
+        // Сет для того, чтобы фиксирвоанная стоимость засчиталась только один раз
         Set<Integer> usedFixPrices = new HashSet<>();
         int totalCost = 0;
+        // Матрица аналогичная periodChoiceMatrix, но хранит минуты
         int[][] totalMinutesMatrix = new int[2][maxTypeId + 1];
 
         for (Call call : report.getCalls()) {
@@ -67,6 +69,7 @@ public class TariffService {
             // Всегда false (0), так как в CDR нет информации о том, кому звонят
             int isSameOperator = 0;
             int callType = call.getCallType();
+            // Выбор id первого периода по параметрам
             int currentPeriodId = periodChoiceMatrix[isSameOperator][callType];
 
             // Выбор стартового периода для текущего звонка
