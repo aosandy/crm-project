@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
 @ComponentScan(basePackages = {"ru.aosandy.common", "ru.aosandy.crm"})
-@EntityScan(basePackages = {"ru.aosandy.common"})
-@EnableJpaRepositories(basePackages = "ru.aosandy.common")
+@EntityScan(basePackages = {"ru.aosandy.common", "ru.aosandy.crm"})
+@EnableJpaRepositories(basePackages = {"ru.aosandy.common", "ru.aosandy.crm"})
 public class ApplicationCRM {
 
     public static void main(String[] args) {

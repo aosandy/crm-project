@@ -3,7 +3,9 @@ package ru.aosandy.common.client;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface ClientsRepository extends JpaRepository<Client, Integer> {
-    Client getClientByNumber(String number);
+    Optional<Client> findByNumber(String number);
 }

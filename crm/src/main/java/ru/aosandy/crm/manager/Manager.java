@@ -1,4 +1,4 @@
-package ru.aosandy.common.client;
+package ru.aosandy.crm.manager;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -7,56 +7,28 @@ import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import ru.aosandy.common.BillingPeriod;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 @Entity
-@Table(name = "clients")
+@Table(name = "managers")
 @NoArgsConstructor
 @Getter
 @Setter
-public class Client implements Serializable, UserDetails {
+public class Manager implements UserDetails {
 
-    private static final String ROLE_NAME = "CLIENT";
+    private static final String ROLE_NAME = "MANAGER";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Column
-    private String number;
+    private String username;
 
     @Column
     private String password;
-
-    @Column
-    private int balance;
-
-    @Column
-    private int tariffId;
-
-    @Column
-    private int operationsCount;
-
-    @OneToMany(
-        mappedBy = "client", cascade = CascadeType.ALL,
-        orphanRemoval = true, fetch = FetchType.EAGER
-    )
-    private List<BillingPeriod> billingPeriods;
-
-    public Client(String number, int balance, int tariffId) {
-        this.number = number;
-        this.balance = balance;
-        this.tariffId = tariffId;
-    }
-
-    public void incrementOperationsCount() {
-        operationsCount += 1;
-    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -71,7 +43,7 @@ public class Client implements Serializable, UserDetails {
 
     @Override
     public String getUsername() {
-        return number;
+        return username;
     }
 
     @Override

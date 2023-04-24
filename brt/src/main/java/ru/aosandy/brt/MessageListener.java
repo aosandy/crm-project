@@ -3,6 +3,7 @@ package ru.aosandy.brt;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ru.aosandy.common.CallDataRecord;
 import ru.aosandy.common.Report;
@@ -28,6 +29,10 @@ public class MessageListener {
 
     @JmsListener(destination = "${report.mq}")
     public void processReports(@Payload List<Report> listReport) {
-        service.proceedReports(listReport);
+        try {
+            service.proceedReports(listReport);
+        } catch (UsernameNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }
