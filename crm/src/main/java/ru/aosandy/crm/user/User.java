@@ -1,4 +1,4 @@
-package ru.aosandy.crm.manager;
+package ru.aosandy.crm.user;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -12,27 +12,30 @@ import java.util.Collection;
 import java.util.Collections;
 
 @Entity
-@Table(name = "managers")
+@Table(name = "users")
 @NoArgsConstructor
 @Getter
 @Setter
-public class Manager implements UserDetails {
-
-    private static final String ROLE_NAME = "MANAGER";
+public class User implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-
-    @Column
     private String username;
 
     @Column
     private String password;
 
+    @ManyToOne
+    private UserRole userRole;
+
+    public User(String username, String password, UserRole userRole) {
+        this.username = username;
+        this.password = password;
+        this.userRole = userRole;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(ROLE_NAME);
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(userRole.getName());
         return Collections.singletonList(authority);
     }
 

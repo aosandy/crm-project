@@ -1,34 +1,29 @@
 package ru.aosandy.crm.service;
 
 import lombok.AllArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.aosandy.common.client.Client;
 import ru.aosandy.common.client.ClientsRepository;
 import ru.aosandy.crm.MessageSender;
-import ru.aosandy.crm.manager.ManagerRepository;
 import ru.aosandy.crm.payload.*;
+import ru.aosandy.crm.user.User;
+import ru.aosandy.crm.user.UserRepository;
+import ru.aosandy.crm.user.UserRoleRepository;
 
 import java.util.Objects;
 import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-public class ManagerService implements UserDetailsService {
+public class ManagerService {
 
     private final ClientsRepository clientRepository;
-    private final ManagerRepository managerRepository;
+    private final UserRepository userRepository;
+    private final UserRoleRepository userRoleRepository;
     private final MessageSender messageSender;
     private final BCryptPasswordEncoder passwordEncoder;
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return managerRepository.findByUsername(username)
-            .orElseThrow(() -> new UsernameNotFoundException("Manager not found"));
-    }
 
     public TariffChangeResponse changeTariff(ClientData request) {
         Client client = clientRepository.findByNumber(request.getNumberPhone())
@@ -45,12 +40,18 @@ public class ManagerService implements UserDetailsService {
             throw new IllegalStateException("Client already exist");
         }
         String encodedPassword = passwordEncoder.encode(clientData.getPassword());
-        Client client = new Client(
+        User user = new User(
             clientData.getNumberPhone(),
             encodedPassword,
+            userRoleRepository.findByName("CLIENT")
+                .orElseThrow(() -> new UsernameNotFoundException("Role not found"))
+        );
+        Client client = new Client(
+            clientData.getNumberPhone(),
             clientData.getTariffIndex(),
             (int) (clientData.getBallance() * 100)
         );
+        userRepository.save(user);
         clientRepository.save(client);
         clientData.setPassword(encodedPassword);
         return clientData;

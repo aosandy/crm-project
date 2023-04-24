@@ -1,7 +1,7 @@
 package ru.aosandy.brt;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ru.aosandy.common.BillingPeriod;
 import ru.aosandy.common.CallDataRecord;
@@ -43,7 +43,7 @@ public class ClientService {
         for (Report report : listReport) {
             BillingPeriod billingPeriod = new BillingPeriod();
             Client client = repository.findByNumber(report.getNumber())
-                .orElseThrow(() -> new UsernameNotFoundException("Client not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Client not found"));
             billingPeriod.setTotalCost(report.getTotalCost());
             billingPeriod.setClient(client);
             report.getCalls().forEach(call -> call.setBillingPeriod(billingPeriod));

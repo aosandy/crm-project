@@ -13,13 +13,13 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(value = {UsernameNotFoundException.class, IllegalStateException.class})
+    @ExceptionHandler(value = {UsernameNotFoundException.class})
     protected ResponseEntity<Object> handleIllegalStateException(RuntimeException ex, WebRequest request) {
         String bodyOfResponse = ex.getLocalizedMessage();
         return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
-    @ExceptionHandler(value = {PSQLException.class})
+    @ExceptionHandler(value = {PSQLException.class, IllegalArgumentException.class, IllegalStateException.class})
     protected ResponseEntity<Object> handlePSQLException(RuntimeException ex, WebRequest request) {
         String bodyOfResponse = "Request contains invalid data";
         return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);

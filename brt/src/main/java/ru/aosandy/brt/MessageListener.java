@@ -1,9 +1,9 @@
 package ru.aosandy.brt;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ru.aosandy.common.CallDataRecord;
 import ru.aosandy.common.Report;
@@ -31,7 +31,7 @@ public class MessageListener {
     public void processReports(@Payload List<Report> listReport) {
         try {
             service.proceedReports(listReport);
-        } catch (UsernameNotFoundException e) {
+        } catch (EntityNotFoundException e) {
             e.printStackTrace();
         }
     }
