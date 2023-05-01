@@ -5,7 +5,7 @@
     <parent>
         <artifactId>nexign-task</artifactId>
         <groupId>ru.aosandy</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -21,7 +21,28 @@
             <groupId>ru.aosandy</groupId>
             <artifactId>common</artifactId>
             <scope>compile</scope>
-            <version>1.0-SNAPSHOT</version>
+            <version>${common.version}</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>${maven-jar-plugin.version}</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>ru.aosandy.cdr.ApplicationCDR</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 </project>

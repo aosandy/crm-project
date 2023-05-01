@@ -13,7 +13,7 @@
     <groupId>ru.aosandy</groupId>
     <artifactId>nexign-task</artifactId>
     <packaging>pom</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <modules>
         <module>cdr</module>
@@ -24,11 +24,13 @@
     </modules>
 
     <properties>
+        <common.version>1.0.0</common.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <spring.boot.version>3.0.5</spring.boot.version>
         <pooled.jms.version>3.1.0</pooled.jms.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+        <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
     </properties>
 
     <dependencies>

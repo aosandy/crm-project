@@ -1,0 +1,95 @@
+version: "3.9"
+
+services:
+  cdr:
+    image: aosandy/nexign-task-cdr:1.0.0
+    restart: always
+    container_name: cdr
+    depends_on:
+      - postgres
+      - artemis
+      - brt
+    environment:
+      - DATABASE_URL=jdbc:postgresql://postgres:5432/nexign-task
+      - DATABASE_USERNAME=postgres
+      - DATABASE_PASSWORD=postgres
+      - BROKER_URL=tcp://artemis:61616
+      - BROKER_USERNAME=quarkus
+      - BROKER_PASSWORD=quarkus
+
+  brt:
+    image: aosandy/nexign-task-brt:1.0.0
+    restart: always
+    container_name: brt
+    depends_on:
+      - postgres
+      - artemis
+      - hrs
+    environment:
+      - DATABASE_URL=jdbc:postgresql://postgres:5432/nexign-task
+      - DATABASE_USERNAME=postgres
+      - DATABASE_PASSWORD=postgres
+      - BROKER_URL=tcp://artemis:61616
+      - BROKER_USERNAME=quarkus
+      - BROKER_PASSWORD=quarkus
+
+  hrs:
+    image: aosandy/nexign-task-hrs:1.0.0
+    restart: always
+    container_name: hrs
+    depends_on:
+      - postgres
+      - artemis
+    environment:
+      - DATABASE_URL=jdbc:postgresql://postgres:5432/nexign-task
+      - DATABASE_USERNAME=postgres
+      - DATABASE_PASSWORD=postgres
+      - BROKER_URL=tcp://artemis:61616
+      - BROKER_USERNAME=quarkus
+      - BROKER_PASSWORD=quarkus
+
+  crm:
+    image: aosandy/nexign-task-crm:1.0.0
+    restart: always
+    container_name: crm
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - artemis
+    environment:
+      - DATABASE_URL=jdbc:postgresql://postgres:5432/nexign-task
+      - DATABASE_USERNAME=postgres
+      - DATABASE_PASSWORD=postgres
+      - BROKER_URL=tcp://artemis:61616
+      - BROKER_USERNAME=quarkus
+      - BROKER_PASSWORD=quarkus
+
+  artemis:
+    image: quay.io/artemiscloud/activemq-artemis-broker
+    restart: always
+    container_name: artemis
+    ports:
+      - "61616:61616/tcp"
+    environment:
+      AMQ_USER: quarkus
+      AMQ_PASSWORD: quarkus
+
+  postgres:
+    image: postgres:15
+    restart: always
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: [ "CMD", "pg_isready","-d","postgres","-U","postgres" ]
+      interval: 5s
+      timeout: 1s
+      retries: 5
+      start_period: 5s
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: nexign-task
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql

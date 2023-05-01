@@ -6,6 +6,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -23,6 +24,7 @@ public class FileBuilderCDR {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
         File file = new File(String.valueOf(Paths.get(folderName, fileName)));
+        Files.createDirectories(Paths.get(folderName));
         file.createNewFile();
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
             for (CallDataRecord cdr : listCdr) {
