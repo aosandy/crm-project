@@ -5,12 +5,17 @@ services:
     image: aosandy/nexign-task-cdr:1.0.0
     restart: always
     container_name: cdr
+    networks:
+      - app-net
     depends_on:
-      - postgres
-      - artemis
-      - brt
+      db:
+        condition: service_healthy
+      artemis:
+        condition: service_started
+      liquibase:
+        condition: service_completed_successfully
     environment:
-      - DATABASE_URL=jdbc:postgresql://postgres:5432/nexign-task
+      - DATABASE_URL=jdbc:postgresql://db:5432/nexign-task
       - DATABASE_USERNAME=postgres
       - DATABASE_PASSWORD=postgres
       - BROKER_URL=tcp://artemis:61616
@@ -21,12 +26,17 @@ services:
     image: aosandy/nexign-task-brt:1.0.0
     restart: always
     container_name: brt
+    networks:
+      - app-net
     depends_on:
-      - postgres
-      - artemis
-      - hrs
+      db:
+        condition: service_healthy
+      artemis:
+        condition: service_started
+      liquibase:
+        condition: service_completed_successfully
     environment:
-      - DATABASE_URL=jdbc:postgresql://postgres:5432/nexign-task
+      - DATABASE_URL=jdbc:postgresql://db:5432/nexign-task
       - DATABASE_USERNAME=postgres
       - DATABASE_PASSWORD=postgres
       - BROKER_URL=tcp://artemis:61616
@@ -37,11 +47,17 @@ services:
     image: aosandy/nexign-task-hrs:1.0.0
     restart: always
     container_name: hrs
+    networks:
+      - app-net
     depends_on:
-      - postgres
-      - artemis
+      db:
+        condition: service_healthy
+      artemis:
+        condition: service_started
+      liquibase:
+        condition: service_completed_successfully
     environment:
-      - DATABASE_URL=jdbc:postgresql://postgres:5432/nexign-task
+      - DATABASE_URL=jdbc:postgresql://db:5432/nexign-task
       - DATABASE_USERNAME=postgres
       - DATABASE_PASSWORD=postgres
       - BROKER_URL=tcp://artemis:61616
@@ -54,11 +70,17 @@ services:
     container_name: crm
     ports:
       - "8080:8080"
+    networks:
+      - app-net
     depends_on:
-      - postgres
-      - artemis
+      db:
+        condition: service_healthy
+      artemis:
+        condition: service_started
+      liquibase:
+        condition: service_completed_successfully
     environment:
-      - DATABASE_URL=jdbc:postgresql://postgres:5432/nexign-task
+      - DATABASE_URL=jdbc:postgresql://db:5432/nexign-task
       - DATABASE_USERNAME=postgres
       - DATABASE_PASSWORD=postgres
       - BROKER_URL=tcp://artemis:61616
@@ -74,11 +96,13 @@ services:
     environment:
       AMQ_USER: quarkus
       AMQ_PASSWORD: quarkus
+    networks:
+      - app-net
 
-  postgres:
+  db:
     image: postgres:15
     restart: always
-    container_name: postgres
+    container_name: db
     ports:
       - "5432:5432"
     healthcheck:
@@ -92,4 +116,26 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: nexign-task
     volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - /var/lib/postgresql/data
+    networks:
+      - app-net
+
+  liquibase:
+    image: liquibase/liquibase:4.17.2
+    command: liquibase --driver=org.postgresql.Driver --url=jdbc:postgresql://db:5432/nexign-task --password=postgres --username=postgres --changelog-file=/boot/db.changelog-master.xml update
+    container_name: liquibase
+    volumes:
+      - ./liquibase/changelog:/liquibase/boot/changelog
+      - ./liquibase/changelog/db.changelog-master.xml:/liquibase/boot/db.changelog-master.xml
+      - ./liquibase/changelog/create-tables-1.0.0.xml:/liquibase/boot/create-tables-1.0.0.xml
+      - ./liquibase/changelog/insert-tables-1.0.0.xml:/liquibase/boot/insert-tables-1.0.0.xml
+    networks:
+      - app-net
+    depends_on:
+      db:
+        condition: service_healthy
+
+networks:
+  app-net:
+    name: app-net
+    driver: bridge

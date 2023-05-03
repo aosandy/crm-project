@@ -1,0 +1,192 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="aosandy" id="1683103550843-1">
+        <createTable tableName="user_roles">
+            <column autoIncrement="true" name="id" startWith="3" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="user_roles_pkey"/>
+            </column>
+            <column name="name" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="aosandy" id="1683103550843-2">
+        <createTable tableName="periods">
+            <column autoIncrement="true" name="id" startWith="6" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="periods_pkey"/>
+            </column>
+            <column name="minute_limit" type="INTEGER"/>
+            <column name="fix_cost" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="price_per_minute" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="next_period_id" type="INTEGER"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="aosandy" id="1683103550843-3">
+        <createTable tableName="start_period_choice">
+            <column autoIncrement="true" name="id" startWith="17" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="start_period_choice_pkey"/>
+            </column>
+            <column name="tariff_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="call_type_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_intranet" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="start_period_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="aosandy" id="1683103550843-4">
+        <createTable tableName="clients">
+            <column autoIncrement="true" name="id" startWith="12" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="clients_pkey"/>
+            </column>
+            <column name="number" type="VARCHAR(11)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="balance" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tariff_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="operations_count" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="aosandy" id="1683103550843-5">
+        <createTable tableName="managers">
+            <column autoIncrement="true" name="id" startWith="2" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="managers_pkey"/>
+            </column>
+            <column name="username" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="aosandy" id="1683103550843-6">
+        <createTable tableName="billing_periods">
+            <column autoIncrement="true" name="id" startWith="177" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="billing_periods_pkey"/>
+            </column>
+            <column name="client_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="total_cost" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="aosandy" id="1683103550843-7">
+        <createTable tableName="calls">
+            <column autoIncrement="true" name="id" startWith="3447" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="calls_pkey"/>
+            </column>
+            <column name="call_type_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="billing_period_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="start_time" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="end_time" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="duration" type="numeric">
+                <constraints nullable="false"/>
+            </column>
+            <column name="cost" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="aosandy" id="1683103550843-8">
+        <createTable tableName="call_types">
+            <column name="id" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="call_types_pkey"/>
+            </column>
+            <column name="name" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="aosandy" id="1683103550843-9">
+        <addUniqueConstraint columnNames="name" constraintName="user_roles_name_key" tableName="user_roles"/>
+    </changeSet>
+    <changeSet author="aosandy" id="1683103550843-10">
+        <addUniqueConstraint columnNames="number" constraintName="clients_number_key" tableName="clients"/>
+    </changeSet>
+    <changeSet author="aosandy" id="1683103550843-11">
+        <addUniqueConstraint columnNames="username" constraintName="managers_username_key" tableName="managers"/>
+    </changeSet>
+    <changeSet author="aosandy" id="1683103550843-12">
+        <addUniqueConstraint columnNames="name" constraintName="call_types_name_key" tableName="call_types"/>
+    </changeSet>
+    <changeSet author="aosandy" id="1683103550843-13">
+        <createTable tableName="tariffs">
+            <column name="id" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="tariffs_pkey"/>
+            </column>
+            <column name="name" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="aosandy" id="1683103550843-14">
+        <createTable tableName="users">
+            <column name="username" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="users_pkey"/>
+            </column>
+            <column name="password" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_role_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="aosandy" id="1683103550843-15">
+        <addForeignKeyConstraint baseColumnNames="client_id" baseTableName="billing_periods" constraintName="billing_periods_client_id_fkey" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="clients" validate="true"/>
+    </changeSet>
+    <changeSet author="aosandy" id="1683103550843-16">
+        <addForeignKeyConstraint baseColumnNames="billing_period_id" baseTableName="calls" constraintName="calls_billing_period_id_fkey" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="billing_periods" validate="true"/>
+    </changeSet>
+    <changeSet author="aosandy" id="1683103550843-17">
+        <addForeignKeyConstraint baseColumnNames="call_type_id" baseTableName="calls" constraintName="calls_call_type_id_fkey" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="call_types" validate="true"/>
+    </changeSet>
+    <changeSet author="aosandy" id="1683103550843-18">
+        <addForeignKeyConstraint baseColumnNames="number" baseTableName="clients" constraintName="clients_number_fkey" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="username" referencedTableName="users" validate="true"/>
+    </changeSet>
+    <changeSet author="aosandy" id="1683103550843-19">
+        <addForeignKeyConstraint baseColumnNames="tariff_id" baseTableName="clients" constraintName="clients_tariff_id_fkey" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="tariffs" validate="true"/>
+    </changeSet>
+    <changeSet author="aosandy" id="1683103550843-20">
+        <addForeignKeyConstraint baseColumnNames="username" baseTableName="managers" constraintName="managers_username_fkey" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="username" referencedTableName="users" validate="true"/>
+    </changeSet>
+    <changeSet author="aosandy" id="1683103550843-21">
+        <addForeignKeyConstraint baseColumnNames="next_period_id" baseTableName="periods" constraintName="periods_next_period_id_fkey" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="periods" validate="true"/>
+    </changeSet>
+    <changeSet author="aosandy" id="1683103550843-22">
+        <addForeignKeyConstraint baseColumnNames="call_type_id" baseTableName="start_period_choice" constraintName="start_period_choice_call_type_id_fkey" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="call_types" validate="true"/>
+    </changeSet>
+    <changeSet author="aosandy" id="1683103550843-23">
+        <addForeignKeyConstraint baseColumnNames="start_period_id" baseTableName="start_period_choice" constraintName="start_period_choice_start_period_id_fkey" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="periods" validate="true"/>
+    </changeSet>
+    <changeSet author="aosandy" id="1683103550843-24">
+        <addForeignKeyConstraint baseColumnNames="tariff_id" baseTableName="start_period_choice" constraintName="start_period_choice_tariff_id_fkey" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="tariffs" validate="true"/>
+    </changeSet>
+    <changeSet author="aosandy" id="1683103550843-25">
+        <addForeignKeyConstraint baseColumnNames="user_role_id" baseTableName="users" constraintName="users_user_role_id_fkey" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user_roles" validate="true"/>
+    </changeSet>
+</databaseChangeLog>
