@@ -65,7 +65,7 @@ services:
       - BROKER_PASSWORD=quarkus
 
   crm:
-    image: aosandy/nexign-task-crm:1.0.0
+    image: aosandy/nexign-task-crm:1.1.0
     restart: always
     container_name: crm
     ports:

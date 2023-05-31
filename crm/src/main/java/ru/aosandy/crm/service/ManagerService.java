@@ -12,8 +12,10 @@ import ru.aosandy.crm.user.User;
 import ru.aosandy.crm.user.UserRepository;
 import ru.aosandy.crm.user.UserRoleRepository;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -67,6 +69,11 @@ public class ManagerService {
         if (!Objects.equals(request.getAction(), "run")) {
             throw new IllegalStateException();
         }
+
+        // Записываем клиентов до тарификации, чтобы вывести в отчете только тех, чьи балансы изменились
+        Map<String, Integer> oldClientsMap =  clientRepository.findAll().stream()
+                .collect(Collectors.toMap(Client::getNumber, Client::getBalance));
+
         messageSender.sendPerformBillingCommand();
         boolean wait = true;
         while (wait) {
@@ -81,6 +88,7 @@ public class ManagerService {
         updateCache();
         return new BillingResponse(
             clientRepository.findAll().stream()
+                .filter(client -> oldClientsMap.get(client.getNumber()) != client.getBalance())
                 .map(client -> new BillingNumberResponse(client.getNumber(), client.getBalance() / 100.0))
                 .toList()
         );
